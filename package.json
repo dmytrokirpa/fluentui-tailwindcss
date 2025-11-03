@@ -1,0 +1,66 @@
+{
+  "name": "fluentui-tailwindcss",
+  "version": "0.1.0",
+  "description": "Fluent UI design tokens as Tailwind CSS v4 presets",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
+  },
+  "keywords": [
+    "fluentui",
+    "tailwindcss",
+    "design-tokens",
+    "css",
+    "preset"
+  ],
+  "files": [
+    "dist",
+    "presets",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./preset.css": "./presets/preset.css",
+    "./themes.css": "./presets/themes.css",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "prebuild": "tsx scripts/generate-presets.ts",
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build",
+    "semantic-release": "semantic-release"
+  },
+  "devDependencies": {
+    "@fluentui/tokens": "1.0.0-alpha.22",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^9.2.6",
+    "@semantic-release/npm": "^12.0.0",
+    "@types/node": "^24.7.2",
+    "prettier": "^3.6.2",
+    "semantic-release": "^24.0.0",
+    "tsdown": "^0.15.6",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "@fluentui/tokens": ">=1.0.0-alpha.22"
+  },
+  "peerDependenciesMeta": {
+    "@fluentui/tokens": {
+      "optional": true
+    }
+  }
+}

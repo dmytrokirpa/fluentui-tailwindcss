@@ -1,0 +1,84 @@
+<!doctype html>
+<html data-theme="web-light" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fluent UI + Tailwind CSS Example - HTML</title>
+  </head>
+  <body
+    class="font-base bg-neutral-background1 text-neutral-foreground1 antialiased"
+  >
+    <div id="app" class="flex flex-col min-h-screen gap-(--spacingVerticalM)">
+      <h1 class="typography-title1">Fluent UI + Tailwind CSS Example - HTML</h1>
+      <p class="typography-body1">
+        The theme switches instantly without reloading the page!
+      </p>
+      <p class="typography-body2">Select a theme to see the changes:</p>
+      <div
+        class="flex flex-col gap-(--spacingVerticalS) bg-brand-background text-neutral-foreground-on-brand"
+      >
+        Primary Bg + Foreground on brand using Tailwind CSS classes
+      </div>
+      <div class="flex flex-col typography-body2 gap-(--spacingVerticalS)">
+        <label for="web-light"
+          >Web Light
+          <input
+            type="radio"
+            name="theme"
+            id="web-light"
+            value="web-light"
+            checked
+          />
+        </label>
+
+        <label for="web-dark"
+          >Web Dark
+          <input type="radio" name="theme" id="web-dark" value="web-dark" />
+        </label>
+        <label for="teams-light"
+          >Teams Light
+          <input
+            type="radio"
+            name="theme"
+            id="teams-light"
+            value="teams-light"
+          />
+        </label>
+        <label for="teams-dark"
+          >Teams Dark
+          <input type="radio" name="theme" id="teams-dark" value="teams-dark" />
+        </label>
+        <label for="high-contrast"
+          >High Contrast
+          <input
+            type="radio"
+            name="theme"
+            id="high-contrast"
+            value="high-contrast"
+          />
+        </label>
+      </div>
+
+      <div class="grid grid-cols-3 gap-(--spacingHorizontalS)">
+        <div
+          class="flex rounded-medium overflow-hidden bg-status-success-background1 text-status-success-foreground1 size-24 items-center justify-center"
+        >
+          Success
+        </div>
+        <div
+          class="flex rounded-medium overflow-hidden bg-status-warning-background1 text-status-warning-foreground1 size-24 items-center justify-center"
+        >
+          Warning
+        </div>
+        <div
+          class="flex rounded-medium overflow-hidden bg-status-danger-background1 text-status-danger-foreground1 size-24 items-center justify-center"
+        >
+          Danger
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
