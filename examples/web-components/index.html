@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fluent UI + Tailwind CSS Example - HTML</title>
+  </head>
+  <body class="bg-neutral-background1 text-neutral-foreground1 antialiased">
+    <div id="app" class="flex flex-col min-h-screen gap-(--spacingVerticalM)">
+      <h1 class="typography-title1">Fluent UI + Tailwind CSS Example - HTML</h1>
+      <p class="typography-body1">
+        The theme switches instantly without reloading the page!
+      </p>
+      <div
+        class="flex flex-col gap-(--spacingVerticalS) bg-brand-background text-neutral-foreground-on-brand"
+      >
+        Primary Bg + Foreground on brand using Tailwind CSS classes
+      </div>
+      <div class="flex gap-(--spacingHorizontalS)">
+        <fluent-button appearance="primary" data-theme="web-light"
+          >Web Light</fluent-button
+        >
+        <fluent-button appearance="primary" data-theme="web-dark"
+          >Web Dark</fluent-button
+        >
+        <fluent-button appearance="primary" data-theme="teams-light"
+          >Teams Light</fluent-button
+        >
+        <fluent-button appearance="primary" data-theme="teams-dark"
+          >Teams Dark</fluent-button
+        >
+        <fluent-button appearance="primary" data-theme="high-contrast"
+          >High Contrast</fluent-button
+        >
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
