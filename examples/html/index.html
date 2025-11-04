@@ -4,79 +4,754 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fluent UI + Tailwind CSS Example - HTML</title>
+    <title>Analytics Dashboard - Fluent UI + Tailwind CSS</title>
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2Lw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
   </head>
   <body
     class="font-base bg-neutral-background1 text-neutral-foreground1 antialiased"
   >
-    <div id="app" class="flex flex-col min-h-screen gap-(--spacingVerticalM)">
-      <h1 class="typography-title1">Fluent UI + Tailwind CSS Example - HTML</h1>
-      <p class="typography-body1">
-        The theme switches instantly without reloading the page!
-      </p>
-      <p class="typography-body2">Select a theme to see the changes:</p>
-      <div
-        class="flex flex-col gap-(--spacingVerticalS) bg-brand-background text-neutral-foreground-on-brand"
+    <div class="flex flex-col lg:flex-row h-screen">
+      <!-- NavDrawer - Sidebar -->
+      <aside
+        id="navDrawer"
+        class="hidden lg:flex flex-col w-64 border-r border-neutral-stroke1 bg-neutral-background1 transition-transform duration-normal ease-easy-ease"
       >
-        Primary Bg + Foreground on brand using Tailwind CSS classes
-      </div>
-      <div class="flex flex-col typography-body2 gap-(--spacingVerticalS)">
-        <label for="web-light"
-          >Web Light
-          <input
-            type="radio"
-            name="theme"
-            id="web-light"
-            value="web-light"
-            checked
-          />
-        </label>
+        <div class="p-(--spacingHorizontalM) border-b border-neutral-stroke1">
+          <div class="flex items-center gap-x-(--spacingHorizontalS)">
+            <i class="fas fa-globe text-base500"></i>
+            <span class="text-base500 font-weight-semibold">Streamlit-web</span>
+          </div>
+        </div>
+        <nav class="flex-1 flex flex-col py-(--spacingVerticalM)">
+          <div class="flex-1 px-(--spacingHorizontalXS)">
+            <a
+              href="#home"
+              class="nav-item flex items-center gap-x-(--spacingHorizontalS) px-(--spacingHorizontalM) py-(--spacingVerticalS) rounded-medium text-base400 hover:bg-neutral-background2 active:bg-neutral-background2-selected"
+            >
+              <i class="fas fa-home w-5"></i>
+              <span>Home</span>
+            </a>
+            <a
+              href="#analytics"
+              class="nav-item active flex items-center gap-x-(--spacingHorizontalS) px-(--spacingHorizontalM) py-(--spacingVerticalS) rounded-medium text-base400 bg-brand-background2 text-brand-foreground2 hover:bg-brand-background2-hover"
+            >
+              <i class="fas fa-chart-line w-5"></i>
+              <span>Analytics</span>
+            </a>
+            <a
+              href="#clients"
+              class="nav-item flex items-center gap-x-(--spacingHorizontalS) px-(--spacingHorizontalM) py-(--spacingVerticalS) rounded-medium text-base400 hover:bg-neutral-background2 active:bg-neutral-background2-selected"
+            >
+              <i class="fas fa-users w-5"></i>
+              <span>Clients</span>
+            </a>
+            <a
+              href="#tasks"
+              class="nav-item flex items-center gap-x-(--spacingHorizontalS) px-(--spacingHorizontalM) py-(--spacingVerticalS) rounded-medium text-base400 hover:bg-neutral-background2 active:bg-neutral-background2-selected"
+            >
+              <i class="fas fa-calendar w-5"></i>
+              <span>Tasks</span>
+            </a>
+          </div>
+          <div
+            class="px-(--spacingHorizontalM) py-(--spacingVerticalM) border-t border-neutral-stroke1"
+          >
+            <label
+              for="theme-select"
+              class="text-base400 mb-(--spacingVerticalXS) block"
+              >Theme</label
+            >
+            <select
+              id="theme-select"
+              class="w-full px-(--spacingHorizontalS) py-(--spacingVerticalXS) rounded-medium border border-neutral-stroke1 bg-neutral-background1 text-base400 focus:outline-none focus:ring-2 focus:ring-brand-background1"
+            >
+              <option value="web-light">Light Theme</option>
+              <option value="web-dark">Dark Theme</option>
+            </select>
+          </div>
+        </nav>
+      </aside>
 
-        <label for="web-dark"
-          >Web Dark
-          <input type="radio" name="theme" id="web-dark" value="web-dark" />
-        </label>
-        <label for="teams-light"
-          >Teams Light
-          <input
-            type="radio"
-            name="theme"
-            id="teams-light"
-            value="teams-light"
-          />
-        </label>
-        <label for="teams-dark"
-          >Teams Dark
-          <input type="radio" name="theme" id="teams-dark" value="teams-dark" />
-        </label>
-        <label for="high-contrast"
-          >High Contrast
-          <input
-            type="radio"
-            name="theme"
-            id="high-contrast"
-            value="high-contrast"
-          />
-        </label>
-      </div>
+      <!-- Mobile overlay drawer -->
+      <aside
+        id="mobileDrawer"
+        class="lg:hidden fixed inset-y-0 left-0 z-50 w-64 bg-neutral-background1 border-r border-neutral-stroke1 transform -translate-x-full transition-transform duration-normal ease-easy-ease"
+      >
+        <div class="p-(--spacingHorizontalM) border-b border-neutral-stroke1">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-x-(--spacingHorizontalS)">
+              <i class="fas fa-globe text-base500"></i>
+              <span class="text-base500 font-weight-semibold"
+                >Streamlit-web</span
+              >
+            </div>
+            <button
+              id="closeDrawer"
+              class="p-(--spacingVerticalXS) rounded-medium hover:bg-neutral-background2"
+              aria-label="Close navigation"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <nav class="flex-1 flex flex-col py-(--spacingVerticalM)">
+          <div class="flex-1 px-(--spacingHorizontalXS)">
+            <a
+              href="#home"
+              class="nav-item flex items-center gap-x-(--spacingHorizontalS) px-(--spacingHorizontalM) py-(--spacingVerticalS) rounded-medium text-base400 hover:bg-neutral-background2 active:bg-neutral-background2-selected"
+            >
+              <i class="fas fa-home w-5"></i>
+              <span>Home</span>
+            </a>
+            <a
+              href="#analytics"
+              class="nav-item active flex items-center gap-x-(--spacingHorizontalS) px-(--spacingHorizontalM) py-(--spacingVerticalS) rounded-medium text-base400 bg-brand-background2 text-brand-foreground2 hover:bg-brand-background2-hover"
+            >
+              <i class="fas fa-chart-line w-5"></i>
+              <span>Analytics</span>
+            </a>
+            <a
+              href="#clients"
+              class="nav-item flex items-center gap-x-(--spacingHorizontalS) px-(--spacingHorizontalM) py-(--spacingVerticalS) rounded-medium text-base400 hover:bg-neutral-background2 active:bg-neutral-background2-selected"
+            >
+              <i class="fas fa-users w-5"></i>
+              <span>Clients</span>
+            </a>
+            <a
+              href="#tasks"
+              class="nav-item flex items-center gap-x-(--spacingHorizontalS) px-(--spacingHorizontalM) py-(--spacingVerticalS) rounded-medium text-base400 hover:bg-neutral-background2 active:bg-neutral-background2-selected"
+            >
+              <i class="fas fa-calendar w-5"></i>
+              <span>Tasks</span>
+            </a>
+          </div>
+          <div
+            class="px-(--spacingHorizontalM) py-(--spacingVerticalM) border-t border-neutral-stroke1"
+          >
+            <label
+              for="theme-select-mobile"
+              class="text-base400 mb-(--spacingVerticalXS) block"
+              >Theme</label
+            >
+            <select
+              id="theme-select-mobile"
+              class="w-full px-(--spacingHorizontalS) py-(--spacingVerticalXS) rounded-medium border border-neutral-stroke1 bg-neutral-background1 text-base400 focus:outline-none focus:ring-2 focus:ring-brand-background1"
+            >
+              <option value="web-light">Light Theme</option>
+              <option value="web-dark">Dark Theme</option>
+            </select>
+          </div>
+        </nav>
+      </aside>
 
-      <div class="grid grid-cols-3 gap-(--spacingHorizontalS)">
+      <!-- Mobile overlay backdrop -->
+      <div
+        id="drawerBackdrop"
+        class="lg:hidden fixed inset-0 bg-neutral-backdrop z-40 opacity-0 pointer-events-none transition-opacity duration-normal ease-easy-ease"
+      ></div>
+
+      <!-- Main content -->
+      <main
+        class="flex-1 py-(--spacingVerticalM) sm:py-(--spacingVerticalL) px-(--spacingHorizontalM) sm:px-(--spacingHorizontalL) grow overflow-auto"
+      >
+        <!-- Header -->
         <div
-          class="flex rounded-medium overflow-hidden bg-status-success-background1 text-status-success-foreground1 size-24 items-center justify-center"
+          class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-y-(--spacingVerticalS) mb-(--spacingVerticalM) sm:mb-(--spacingVerticalL)"
         >
-          Success
+          <div class="flex items-center gap-x-(--spacingHorizontalS)">
+            <button
+              id="hamburger"
+              class="lg:hidden p-(--spacingVerticalXS) rounded-medium hover:bg-neutral-background2 active:bg-neutral-background2-pressed"
+              aria-label="Open navigation"
+            >
+              <i class="fas fa-bars text-base500"></i>
+            </button>
+            <h1 class="text-base500 sm:text-base600 font-weight-semibold">
+              Dashboard
+            </h1>
+            <span class="text-base300 sm:text-base400">/ Analytics</span>
+          </div>
+          <div
+            class="flex flex-col sm:flex-row gap-y-(--spacingVerticalXS) sm:gap-y-0 gap-x-(--spacingHorizontalS) items-start sm:items-center"
+          >
+            <span class="text-base300 sm:text-base400">Apr 17, 2023</span>
+            <button
+              class="px-(--spacingHorizontalM) py-(--spacingVerticalS) rounded-medium bg-brand-background text-brand-foreground1 hover:bg-brand-background-hover active:bg-brand-background-pressed font-weight-semibold text-base400 w-full sm:w-auto transition-colors duration-normal ease-easy-ease"
+            >
+              Get insights
+            </button>
+          </div>
         </div>
+
+        <!-- Stat Cards -->
         <div
-          class="flex rounded-medium overflow-hidden bg-status-warning-background1 text-status-warning-foreground1 size-24 items-center justify-center"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-(--spacingHorizontalM) sm:gap-(--spacingHorizontalL) mb-(--spacingVerticalM) sm:mb-(--spacingVerticalL)"
         >
-          Warning
+          <!-- Users Card -->
+          <div
+            class="p-(--spacingVerticalM) rounded-medium shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-[box-shadow,transform] duration-normal ease-easy-ease hover:shadow-16 hover:-translate-y-0.5"
+          >
+            <div
+              class="text-base600 sm:text-hero800 font-weight-semibold flex items-center gap-x-(--spacingHorizontalS) mb-(--spacingVerticalXS)"
+            >
+              <i class="fas fa-users"></i>
+              <span>14k</span>
+            </div>
+            <p class="text-base300 sm:text-base400 mb-(--spacingVerticalXS)">
+              Users
+            </p>
+            <div
+              class="flex items-center gap-x-(--spacingHorizontalXS) text-base200 text-palette-green-foreground1"
+            >
+              <i class="fas fa-chevron-up"></i>
+              <span>+5%</span>
+              <span class="hidden sm:inline">Last 30 days</span>
+            </div>
+          </div>
+
+          <!-- Conversions Card -->
+          <div
+            class="p-(--spacingVerticalM) rounded-medium shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-[box-shadow,transform] duration-normal ease-easy-ease hover:shadow-16 hover:-translate-y-0.5"
+          >
+            <div
+              class="text-base600 sm:text-hero800 font-weight-semibold flex items-center gap-x-(--spacingHorizontalS) mb-(--spacingVerticalXS)"
+            >
+              <i class="fas fa-eye"></i>
+              <span>325</span>
+            </div>
+            <p class="text-base300 sm:text-base400 mb-(--spacingVerticalXS)">
+              Conversions
+            </p>
+            <div
+              class="flex items-center gap-x-(--spacingHorizontalXS) text-base200 text-palette-red-foreground1"
+            >
+              <i class="fas fa-chevron-down"></i>
+              <span>-3%</span>
+              <span class="hidden sm:inline">Last 30 days</span>
+            </div>
+          </div>
+
+          <!-- Event Count Card -->
+          <div
+            class="p-(--spacingVerticalM) rounded-medium shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-[box-shadow,transform] duration-normal ease-easy-ease hover:shadow-16 hover:-translate-y-0.5"
+          >
+            <div
+              class="text-base600 sm:text-hero800 font-weight-semibold flex items-center gap-x-(--spacingHorizontalS) mb-(--spacingVerticalXS)"
+            >
+              <i class="fas fa-chart-line"></i>
+              <span>200k</span>
+            </div>
+            <p class="text-base300 sm:text-base400 mb-(--spacingVerticalXS)">
+              Event count
+            </p>
+            <div
+              class="flex items-center gap-x-(--spacingHorizontalXS) text-base200 text-palette-green-foreground1"
+            >
+              <i class="fas fa-chevron-up"></i>
+              <span>+3%</span>
+              <span class="hidden sm:inline">Last 30 days</span>
+            </div>
+          </div>
+
+          <!-- Action Card -->
+          <div
+            class="p-(--spacingVerticalM) rounded-medium shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-shadow duration-normal ease-easy-ease hover:shadow-16"
+          >
+            <div class="mb-(--spacingVerticalM)">
+              <h3
+                class="text-base400 sm:text-base500 font-weight-semibold mb-(--spacingVerticalXS)"
+              >
+                Explore your data
+              </h3>
+              <p class="text-base300 sm:text-base400">
+                Uncover performance and visitor insights with our data
+              </p>
+            </div>
+            <button
+              class="px-(--spacingHorizontalM) py-(--spacingVerticalS) rounded-medium bg-brand-background text-brand-foreground1 hover:bg-brand-background-hover active:bg-brand-background-pressed font-weight-semibold text-base400 w-full sm:w-auto transition-colors duration-normal ease-easy-ease"
+            >
+              Get insights
+            </button>
+          </div>
         </div>
+
+        <!-- Charts Section -->
         <div
-          class="flex rounded-medium overflow-hidden bg-status-danger-background1 text-status-danger-foreground1 size-24 items-center justify-center"
+          class="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-(--spacingHorizontalM) sm:gap-(--spacingHorizontalL) mb-(--spacingVerticalM) sm:mb-(--spacingVerticalL)"
         >
-          Danger
+          <!-- Sessions Chart Card -->
+          <div
+            class="p-(--spacingVerticalM) rounded-medium shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-shadow duration-normal ease-easy-ease hover:shadow-16"
+          >
+            <div class="mb-(--spacingVerticalM)">
+              <h3
+                class="text-base400 sm:text-base500 font-weight-semibold mb-(--spacingVerticalXS)"
+              >
+                Sessions
+              </h3>
+              <div
+                class="text-base600 sm:text-hero800 font-weight-semibold flex flex-wrap items-center gap-x-(--spacingHorizontalS) mb-(--spacingVerticalXS)"
+              >
+                <span>13,277</span>
+                <div
+                  class="flex items-center gap-x-(--spacingHorizontalXS) text-base200 text-palette-green-foreground1"
+                >
+                  <i class="fas fa-chevron-up"></i>
+                  <span>+4%</span>
+                </div>
+              </div>
+              <p class="text-base300 sm:text-base400">
+                Sessions over time for the last 30 days
+              </p>
+            </div>
+            <div class="overflow-x-auto rounded-medium bg-neutral-background2">
+              <img
+                src="https://via.placeholder.com/600x300/0078D4/FFFFFF?text=Sessions+Chart"
+                alt="Sessions over time chart"
+                class="w-full h-auto rounded-medium"
+              />
+            </div>
+          </div>
+
+          <!-- Page Views Chart Card -->
+          <div
+            class="p-(--spacingVerticalM) rounded-medium shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-shadow duration-normal ease-easy-ease hover:shadow-16"
+          >
+            <div class="mb-(--spacingVerticalM)">
+              <h3
+                class="text-base400 sm:text-base500 font-weight-semibold mb-(--spacingVerticalXS)"
+              >
+                Page views and downloads
+              </h3>
+              <div
+                class="text-base600 sm:text-hero800 font-weight-semibold flex flex-wrap items-center gap-x-(--spacingHorizontalS) mb-(--spacingVerticalXS)"
+              >
+                <span>1.3M</span>
+                <div
+                  class="flex items-center gap-x-(--spacingHorizontalXS) text-base200 text-palette-red-foreground1"
+                >
+                  <i class="fas fa-chevron-down"></i>
+                  <span>-6%</span>
+                </div>
+              </div>
+              <p class="text-base300 sm:text-base400">
+                Page views and downloads for the last 6 months
+              </p>
+            </div>
+            <div class="overflow-x-auto rounded-medium bg-neutral-background2">
+              <img
+                src="https://via.placeholder.com/400x200/0078D4/FFFFFF?text=Page+Views+Chart"
+                alt="Page views chart"
+                class="w-full h-auto rounded-medium"
+              />
+            </div>
+          </div>
         </div>
-      </div>
+
+        <!-- Table and Country Stats Section -->
+        <div
+          class="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-(--spacingHorizontalM) sm:gap-(--spacingHorizontalL)"
+        >
+          <!-- Details Table Card -->
+          <div
+            class="p-(--spacingVerticalM) rounded-medium shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-shadow duration-normal ease-easy-ease hover:shadow-16"
+          >
+            <h3
+              class="text-base400 sm:text-base500 font-weight-semibold mb-(--spacingVerticalM)"
+            >
+              Details
+            </h3>
+            <div class="overflow-x-auto">
+              <table class="w-full border-collapse">
+                <thead>
+                  <tr class="border-b border-neutral-stroke1">
+                    <th
+                      class="text-left py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base300 font-weight-semibold"
+                    >
+                      Page Title
+                    </th>
+                    <th
+                      class="text-left py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base300 font-weight-semibold"
+                    >
+                      Status
+                    </th>
+                    <th
+                      class="text-left py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base300 font-weight-semibold"
+                    >
+                      Users
+                    </th>
+                    <th
+                      class="text-left py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base300 font-weight-semibold"
+                    >
+                      Event Count
+                    </th>
+                    <th
+                      class="text-left py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base300 font-weight-semibold"
+                    >
+                      Views per User
+                    </th>
+                    <th
+                      class="text-left py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base300 font-weight-semibold"
+                    >
+                      Average Time
+                    </th>
+                    <th
+                      class="text-left py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base300 font-weight-semibold"
+                    >
+                      Daily Conversions
+                    </th>
+                    <th
+                      class="text-left py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base300 font-weight-semibold"
+                    >
+                      Product tree
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    class="border-b border-neutral-stroke1 hover:bg-neutral-background2"
+                  >
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      Homepage Overview
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS)"
+                    >
+                      <span
+                        class="inline-flex items-center px-(--spacingHorizontalS) py-(--spacingVerticalXXS) rounded-small text-base200 bg-status-success-background1 text-status-success-foreground1 font-weight-medium"
+                      >
+                        Online
+                      </span>
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      23,423
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      8,345
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      18.3
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      2m 14s
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      4.2%
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      Website
+                    </td>
+                  </tr>
+                  <tr
+                    class="border-b border-neutral-stroke1 hover:bg-neutral-background2"
+                  >
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      Product Details - Gadgets
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS)"
+                    >
+                      <span
+                        class="inline-flex items-center px-(--spacingHorizontalS) py-(--spacingVerticalXXS) rounded-small text-base200 bg-status-success-background1 text-status-success-foreground1 font-weight-medium"
+                      >
+                        Online
+                      </span>
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      17,240
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      5,953
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      8.7
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      2m 30s
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      3.8%
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      Home
+                    </td>
+                  </tr>
+                  <tr
+                    class="border-b border-neutral-stroke1 hover:bg-neutral-background2"
+                  >
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      Checkout Process - Step 1
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS)"
+                    >
+                      <span
+                        class="inline-flex items-center px-(--spacingHorizontalS) py-(--spacingVerticalXXS) rounded-small text-base200 border border-status-danger-stroke1 text-status-danger-foreground1 font-weight-medium"
+                      >
+                        Offline
+                      </span>
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      58,246
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      3,456
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      15.2
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      2m 55s
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      2.9%
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      Pricing
+                    </td>
+                  </tr>
+                  <tr
+                    class="border-b border-neutral-stroke1 hover:bg-neutral-background2"
+                  >
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      User Profile Dashboard
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS)"
+                    >
+                      <span
+                        class="inline-flex items-center px-(--spacingHorizontalS) py-(--spacingVerticalXXS) rounded-small text-base200 bg-status-success-background1 text-status-success-foreground1 font-weight-medium"
+                      >
+                        Online
+                      </span>
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      86,246
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      12,434
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      7.4
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      2m 40s
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      3.1%
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      About us
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-neutral-background2">
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      Article Listing - Tech News
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS)"
+                    >
+                      <span
+                        class="inline-flex items-center px-(--spacingHorizontalS) py-(--spacingVerticalXXS) rounded-small text-base200 bg-status-success-background1 text-status-success-foreground1 font-weight-medium"
+                      >
+                        Online
+                      </span>
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      14,246
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      3,553
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      3.1
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      2m 55s
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      2.7%
+                    </td>
+                    <td
+                      class="py-(--spacingVerticalS) px-(--spacingHorizontalS) text-base400"
+                    >
+                      Blog
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Users by Country Card -->
+          <div class="flex flex-col gap-y-(--spacingVerticalM)">
+            <div
+              class="p-(--spacingVerticalM) rounded-medium shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-shadow duration-normal ease-easy-ease hover:shadow-16"
+            >
+              <h3
+                class="text-base400 sm:text-base500 font-weight-semibold mb-(--spacingVerticalM)"
+              >
+                Users by country
+              </h3>
+              <div class="flex flex-col gap-y-(--spacingVerticalS)">
+                <div
+                  class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-y-(--spacingVerticalXS) py-(--spacingVerticalXS)"
+                >
+                  <div class="flex items-center gap-x-(--spacingHorizontalS)">
+                    <span
+                      class="w-5 h-[15px] bg-neutral-background3 rounded-small flex items-center justify-center text-base200"
+                    >
+                      🇮🇳
+                    </span>
+                    <span class="text-base300 sm:text-base400">India</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="w-full sm:w-15 h-1 bg-neutral-background3 rounded-small overflow-hidden flex-1 sm:flex-none"
+                    >
+                      <div
+                        class="h-full bg-brand-background transition-[width] duration-gentle ease-easy-ease"
+                        style="width: 59%"
+                      ></div>
+                    </div>
+                    <span
+                      class="text-base300 sm:text-base400 font-weight-medium"
+                      >59%</span
+                    >
+                  </div>
+                </div>
+                <div
+                  class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-y-(--spacingVerticalXS) py-(--spacingVerticalXS)"
+                >
+                  <div class="flex items-center gap-x-(--spacingHorizontalS)">
+                    <span
+                      class="w-5 h-[15px] bg-neutral-background3 rounded-small flex items-center justify-center text-base200"
+                    >
+                      🇺🇸
+                    </span>
+                    <span class="text-base300 sm:text-base400">USA</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="w-full sm:w-15 h-1 bg-neutral-background3 rounded-small overflow-hidden flex-1 sm:flex-none"
+                    >
+                      <div
+                        class="h-full bg-brand-background transition-[width] duration-gentle ease-easy-ease"
+                        style="width: 22%"
+                      ></div>
+                    </div>
+                    <span
+                      class="text-base300 sm:text-base400 font-weight-medium"
+                      >22%</span
+                    >
+                  </div>
+                </div>
+                <div
+                  class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-y-(--spacingVerticalXS) py-(--spacingVerticalXS)"
+                >
+                  <div class="flex items-center gap-x-(--spacingHorizontalS)">
+                    <span
+                      class="w-5 h-[15px] bg-neutral-background3 rounded-small flex items-center justify-center text-base200"
+                    >
+                      🇧🇷
+                    </span>
+                    <span class="text-base300 sm:text-base400">Brazil</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="w-full sm:w-15 h-1 bg-neutral-background3 rounded-small overflow-hidden flex-1 sm:flex-none"
+                    >
+                      <div
+                        class="h-full bg-brand-background transition-[width] duration-gentle ease-easy-ease"
+                        style="width: 15%"
+                      ></div>
+                    </div>
+                    <span
+                      class="text-base300 sm:text-base400 font-weight-medium"
+                      >15%</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
 
     <script type="module" src="/src/main.ts"></script>

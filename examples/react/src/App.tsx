@@ -1,400 +1,594 @@
-import { useState } from "react";
+import * as React from "react";
 import {
-  Button,
   Card,
   CardHeader,
   CardPreview,
   Text,
+  Button,
+  Badge,
+  DataGrid,
+  DataGridHeader,
+  DataGridHeaderCell,
+  DataGridBody,
+  DataGridRow,
+  DataGridCell,
+  TableColumnDefinition,
+  createTableColumn,
+  NavItem,
   FluentProvider,
   webLightTheme,
   webDarkTheme,
-  teamsLightTheme,
-  teamsDarkTheme,
-  Title2,
-  Title3,
-  Body1,
-  Body1Strong,
-  Caption1,
+  tokens,
+  NavDrawer,
+  NavDrawerHeader,
+  NavDrawerBody,
+  Hamburger,
+  AppItem,
+  useRestoreFocusTarget,
+  Select,
 } from "@fluentui/react-components";
-import type { Theme } from "@fluentui/react-components";
+import {
+  DataTrending24Regular,
+  People24Regular,
+  Eye24Regular,
+  Calendar24Regular,
+  Globe24Regular,
+  ChevronUp24Regular,
+  ChevronDown24Regular,
+  Home24Regular,
+} from "@fluentui/react-icons";
+import {
+  AreaChart,
+  VerticalBarChart,
+  ChartProps,
+  VerticalBarChartDataPoint,
+} from "@fluentui/react-charts";
 
-type ThemeName = "web-light" | "web-dark" | "teams-light" | "teams-dark";
+interface TableItem {
+  pageTitle: string;
+  status: string;
+  users: number;
+  eventCount: number;
+  viewsPerUser: number;
+  averageTime: string;
+  dailyConversions: number;
+  productTree: string;
+}
 
-const themeMap: Record<ThemeName, Theme> = {
-  "web-light": webLightTheme,
-  "web-dark": webDarkTheme,
-  "teams-light": teamsLightTheme,
-  "teams-dark": teamsDarkTheme,
+const tableData: TableItem[] = [
+  {
+    pageTitle: "Homepage Overview",
+    status: "Online",
+    users: 23423,
+    eventCount: 8345,
+    viewsPerUser: 18.3,
+    averageTime: "2m 14s",
+    dailyConversions: 4.2,
+    productTree: "Website",
+  },
+  {
+    pageTitle: "Product Details - Gadgets",
+    status: "Online",
+    users: 17240,
+    eventCount: 5953,
+    viewsPerUser: 8.7,
+    averageTime: "2m 30s",
+    dailyConversions: 3.8,
+    productTree: "Home",
+  },
+  {
+    pageTitle: "Checkout Process - Step 1",
+    status: "Offline",
+    users: 58246,
+    eventCount: 3456,
+    viewsPerUser: 15.2,
+    averageTime: "2m 55s",
+    dailyConversions: 2.9,
+    productTree: "Pricing",
+  },
+  {
+    pageTitle: "User Profile Dashboard",
+    status: "Online",
+    users: 86246,
+    eventCount: 12434,
+    viewsPerUser: 7.4,
+    averageTime: "2m 40s",
+    dailyConversions: 3.1,
+    productTree: "About us",
+  },
+  {
+    pageTitle: "Article Listing - Tech News",
+    status: "Online",
+    users: 14246,
+    eventCount: 3553,
+    viewsPerUser: 3.1,
+    averageTime: "2m 55s",
+    dailyConversions: 2.7,
+    productTree: "Blog",
+  },
+];
+
+const columns: TableColumnDefinition<TableItem>[] = [
+  createTableColumn<TableItem>({
+    columnId: "pageTitle",
+    compare: (a, b) => a.pageTitle.localeCompare(b.pageTitle),
+    renderHeaderCell: () => "Page Title",
+    renderCell: (item) => item.pageTitle,
+  }),
+  createTableColumn<TableItem>({
+    columnId: "status",
+    compare: (a, b) => a.status.localeCompare(b.status),
+    renderHeaderCell: () => "Status",
+    renderCell: (item) => (
+      <Badge
+        appearance={item.status === "Online" ? "filled" : "outline"}
+        color={item.status === "Online" ? "success" : "danger"}
+      >
+        {item.status}
+      </Badge>
+    ),
+  }),
+  createTableColumn<TableItem>({
+    columnId: "users",
+    compare: (a, b) => a.users - b.users,
+    renderHeaderCell: () => "Users",
+    renderCell: (item) => item.users.toLocaleString(),
+  }),
+  createTableColumn<TableItem>({
+    columnId: "eventCount",
+    compare: (a, b) => a.eventCount - b.eventCount,
+    renderHeaderCell: () => "Event Count",
+    renderCell: (item) => item.eventCount.toLocaleString(),
+  }),
+  createTableColumn<TableItem>({
+    columnId: "viewsPerUser",
+    compare: (a, b) => a.viewsPerUser - b.viewsPerUser,
+    renderHeaderCell: () => "Views per User",
+    renderCell: (item) => item.viewsPerUser.toString(),
+  }),
+  createTableColumn<TableItem>({
+    columnId: "averageTime",
+    compare: (a, b) => a.averageTime.localeCompare(b.averageTime),
+    renderHeaderCell: () => "Average Time",
+    renderCell: (item) => item.averageTime,
+  }),
+  createTableColumn<TableItem>({
+    columnId: "dailyConversions",
+    compare: (a, b) => a.dailyConversions - b.dailyConversions,
+    renderHeaderCell: () => "Daily Conversions",
+    renderCell: (item) => `${item.dailyConversions}%`,
+  }),
+  createTableColumn<TableItem>({
+    columnId: "productTree",
+    compare: (a, b) => a.productTree.localeCompare(b.productTree),
+    renderHeaderCell: () => "Product tree",
+    renderCell: (item) => item.productTree,
+  }),
+];
+
+// Chart data for Sessions Area Chart
+const sessionsData: ChartProps = {
+  chartTitle: "Sessions Over Time",
+  lineChartData: [
+    {
+      legend: "Sessions",
+      data: [
+        { x: new Date("2023-03-01"), y: 8500 },
+        { x: new Date("2023-03-05"), y: 9200 },
+        { x: new Date("2023-03-10"), y: 10800 },
+        { x: new Date("2023-03-15"), y: 11500 },
+        { x: new Date("2023-03-20"), y: 13277 },
+        { x: new Date("2023-03-25"), y: 12800 },
+        { x: new Date("2023-03-30"), y: 14200 },
+        { x: new Date("2023-04-01"), y: 13900 },
+        { x: new Date("2023-04-05"), y: 15100 },
+        { x: new Date("2023-04-10"), y: 14800 },
+        { x: new Date("2023-04-15"), y: 16200 },
+        { x: new Date("2023-04-17"), y: 13277 },
+      ],
+      color: tokens.colorBrandBackground,
+    },
+  ],
 };
 
-function App() {
-  const [themeName, setThemeName] = useState<ThemeName>("web-light");
-  const currentTheme = themeMap[themeName];
+// Chart data for Page Views Bar Chart
+const pageViewsData: VerticalBarChartDataPoint[] = [
+  {
+    x: "Oct",
+    y: 980000,
+    legend: "October",
+    color: tokens.colorPaletteBlueForeground2,
+  },
+  {
+    x: "Nov",
+    y: 1100000,
+    legend: "November",
+    color: tokens.colorPaletteBlueForeground2,
+  },
+  {
+    x: "Dec",
+    y: 1250000,
+    legend: "December",
+    color: tokens.colorPaletteBlueForeground2,
+  },
+  {
+    x: "Jan",
+    y: 1150000,
+    legend: "January",
+    color: tokens.colorPaletteBlueForeground2,
+  },
+  {
+    x: "Feb",
+    y: 1300000,
+    legend: "February",
+    color: tokens.colorPaletteBlueForeground2,
+  },
+  {
+    x: "Mar",
+    y: 1280000,
+    legend: "March",
+    color: tokens.colorPaletteBlueForeground2,
+  },
+];
+
+const countryData = [
+  { name: "India", percentage: 59, flag: "🇮🇳" },
+  { name: "USA", percentage: 22, flag: "🇺🇸" },
+  { name: "Brazil", percentage: 15, flag: "🇧🇷" },
+];
+
+// Available themes
+const themes = {
+  "web-light": webLightTheme,
+  "web-dark": webDarkTheme,
+} as const;
+
+type ThemeName = keyof typeof themes;
+
+const AnalyticsDashboard: React.FC = () => {
+  const [selectedValue, setSelectedValue] = React.useState("home");
+  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
+  const [isLargeScreen, setIsLargeScreen] = React.useState(false);
+  const [currentTheme, setCurrentTheme] =
+    React.useState<ThemeName>("web-light");
+
+  // Detect screen size for responsive drawer
+  React.useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    setIsLargeScreen(mediaQuery.matches);
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      setIsLargeScreen(e.matches);
+      // On large screens, keep drawer open; on small screens, close overlay drawer when switching
+      if (e.matches) {
+        setIsDrawerOpen(true); // Keep inline drawer open on large screens
+      } else {
+        setIsDrawerOpen(false); // Close overlay drawer on small screens when switching
+      }
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  // Initialize drawer state based on screen size
+  React.useEffect(() => {
+    if (isLargeScreen) {
+      setIsDrawerOpen(true); // Open inline drawer on large screens by default
+    }
+  }, [isLargeScreen]);
+
+  const handleNavItemSelect = (_: unknown, data: { value: string }) => {
+    setSelectedValue(data.value);
+    // Close overlay drawer on mobile after selection
+    if (!isLargeScreen) {
+      setIsDrawerOpen(false);
+    }
+  };
+
+  // Focus restoration hooks for overlay drawer
+  const restoreFocusTargetAttributes = useRestoreFocusTarget();
+
+  const handleThemeChange = (_: unknown, data: { value: string }) => {
+    setCurrentTheme(data.value as ThemeName);
+  };
 
   return (
-    <FluentProvider theme={currentTheme}>
-      <div className="min-h-screen bg-neutral-background1">
-        {/* Responsive Header with Navigation */}
-        <header className="border-b border-neutral-stroke1 bg-neutral-background2">
-          <div className="max-w-[1400px] mx-auto px-(--spacingHorizontalXL) py-(--spacingVerticalM)">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-(--spacingHorizontalM)">
-              <div>
-                <h1 className="typography-title1">Fluent UI + Tailwind CSS</h1>
-                <p className="typography-body1 mt-(--spacingVerticalXS)">
-                  Layout examples with Fluent React Components
-                </p>
-              </div>
-              <div className="flex gap-x-(--spacingHorizontalS) flex-wrap">
-                <Button
-                  size="small"
-                  appearance={
-                    themeName === "web-light" ? "primary" : "secondary"
-                  }
-                  onClick={() => setThemeName("web-light")}
-                >
-                  Light
-                </Button>
-                <Button
-                  size="small"
-                  appearance={
-                    themeName === "web-dark" ? "primary" : "secondary"
-                  }
-                  onClick={() => setThemeName("web-dark")}
-                >
-                  Dark
-                </Button>
-                <Button
-                  size="small"
-                  appearance={
-                    themeName === "teams-light" ? "primary" : "secondary"
-                  }
-                  onClick={() => setThemeName("teams-light")}
-                >
-                  Teams
-                </Button>
-              </div>
+    <FluentProvider theme={themes[currentTheme]}>
+      <div className="flex flex-col lg:flex-row h-screen">
+        {/* NavDrawer - inline on large screens, overlay on small screens */}
+        <NavDrawer
+          type={isLargeScreen ? "inline" : "overlay"}
+          open={isDrawerOpen}
+          onOpenChange={(_, { open }) => setIsDrawerOpen(open)}
+          selectedValue={selectedValue}
+          onNavItemSelect={handleNavItemSelect}
+        >
+          <NavDrawerHeader>
+            <AppItem icon={<Globe24Regular />}>Streamlit-web</AppItem>
+          </NavDrawerHeader>
+          <NavDrawerBody className="flex flex-col">
+            <div className="flex-1">
+              <NavItem value="home" icon={<Home24Regular />}>
+                Home
+              </NavItem>
+              <NavItem value="analytics" icon={<DataTrending24Regular />}>
+                Analytics
+              </NavItem>
+              <NavItem value="clients" icon={<People24Regular />}>
+                Clients
+              </NavItem>
+              <NavItem value="tasks" icon={<Calendar24Regular />}>
+                Tasks
+              </NavItem>
+            </div>
+            <div className="px-(--spacingHorizontalM) py-(--spacingVerticalM) border-t border-neutral-stroke1">
+              <Select
+                value={currentTheme}
+                onChange={handleThemeChange}
+                aria-label="Select theme"
+              >
+                <option value="web-light">Light Theme</option>
+                <option value="web-dark">Dark Theme</option>
+              </Select>
+            </div>
+          </NavDrawerBody>
+        </NavDrawer>
+
+        {/* Main content */}
+        <main className="flex-1 py-(--spacingVerticalM) sm:py-(--spacingVerticalL) px-(--spacingHorizontalM) sm:px-(--spacingHorizontalL) grow overflow-auto">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-y-(--spacingVerticalS) mb-(--spacingVerticalM) sm:mb-(--spacingVerticalL)">
+            <div className="flex items-center gap-x-(--spacingHorizontalS)">
+              <Hamburger
+                {...restoreFocusTargetAttributes}
+                onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+                aria-label="Open navigation"
+              />
+              <Text
+                size={600}
+                weight="semibold"
+                className="text-base500 sm:text-base600"
+              >
+                Dashboard
+              </Text>
+              <Text className="text-base300 sm:text-base400">
+                {" "}
+                /{" "}
+                {selectedValue.charAt(0).toUpperCase() + selectedValue.slice(1)}
+              </Text>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-y-(--spacingVerticalXS) sm:gap-y-0 gap-x-(--spacingHorizontalS) items-start sm:items-center">
+              <Text className="text-base300 sm:text-base400">Apr 17, 2023</Text>
+              <Button appearance="primary" className="w-full sm:w-auto">
+                Get insights
+              </Button>
             </div>
           </div>
-        </header>
 
-        <main className="max-w-[1400px] mx-auto px-(--spacingHorizontalXL) py-(--spacingVerticalXL)">
-          {/* Dashboard-style Stats Grid */}
-          <section className="mb-(--spacingVerticalXL)">
-            <Title2 className="typography-title2 mb-(--spacingVerticalL)">
-              Dashboard Layout - Stats Grid
-            </Title2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-(--spacingHorizontalL)">
-              <Card className="bg-neutral-card-background border border-neutral-stroke1 rounded-medium shadow-2">
-                <CardPreview className="p-(--spacingHorizontalL)">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <Caption1 className="text-neutral-foreground3">
-                        Total Users
-                      </Caption1>
-                      <Title3 className="typography-title3 mt-(--spacingVerticalXS)">
-                        12,345
-                      </Title3>
-                      <Body1 className="text-status-success-foreground1 mt-(--spacingVerticalXS)">
-                        +12.5%
-                      </Body1>
-                    </div>
-                    <div className="w-12 h-12 rounded-medium bg-brand-background flex items-center justify-center">
-                      <Text className="text-brand-foreground1">👥</Text>
-                    </div>
-                  </div>
-                </CardPreview>
-              </Card>
-
-              <Card className="bg-neutral-card-background border border-neutral-stroke1 rounded-medium shadow-2">
-                <CardPreview className="p-(--spacingHorizontalL)">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <Caption1 className="text-neutral-foreground3">
-                        Revenue
-                      </Caption1>
-                      <Title3 className="typography-title3 mt-(--spacingVerticalXS)">
-                        $45.2K
-                      </Title3>
-                      <Body1 className="text-status-success-foreground1 mt-(--spacingVerticalXS)">
-                        +8.2%
-                      </Body1>
-                    </div>
-                    <div className="w-12 h-12 rounded-medium bg-compound-brand-background flex items-center justify-center">
-                      <Text className="text-compound-brand-foreground1">
-                        💰
-                      </Text>
-                    </div>
-                  </div>
-                </CardPreview>
-              </Card>
-
-              <Card className="bg-neutral-card-background border border-neutral-stroke1 rounded-medium shadow-2">
-                <CardPreview className="p-(--spacingHorizontalL)">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <Caption1 className="text-neutral-foreground3">
-                        Orders
-                      </Caption1>
-                      <Title3 className="typography-title3 mt-(--spacingVerticalXS)">
-                        1,234
-                      </Title3>
-                      <Body1 className="text-status-warning-foreground1 mt-(--spacingVerticalXS)">
-                        -3.1%
-                      </Body1>
-                    </div>
-                    <div className="w-12 h-12 rounded-medium bg-status-warning-background1 flex items-center justify-center">
-                      <Text className="text-status-warning-foreground1">
-                        📦
-                      </Text>
-                    </div>
-                  </div>
-                </CardPreview>
-              </Card>
-
-              <Card className="bg-neutral-card-background border border-neutral-stroke1 rounded-medium shadow-2">
-                <CardPreview className="p-(--spacingHorizontalL)">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <Caption1 className="text-neutral-foreground3">
-                        Active
-                      </Caption1>
-                      <Title3 className="typography-title3 mt-(--spacingVerticalXS)">
-                        89.2%
-                      </Title3>
-                      <Body1 className="text-status-success-foreground1 mt-(--spacingVerticalXS)">
-                        +2.4%
-                      </Body1>
-                    </div>
-                    <div className="w-12 h-12 rounded-medium bg-status-success-background1 flex items-center justify-center">
-                      <Text className="text-status-success-foreground1">✓</Text>
-                    </div>
-                  </div>
-                </CardPreview>
-              </Card>
-            </div>
-          </section>
-
-          {/* Responsive Sidebar + Main Content Layout */}
-          <section className="mb-(--spacingVerticalXL)">
-            <Title2 className="typography-title2 mb-(--spacingVerticalL)">
-              Responsive Sidebar Layout
-            </Title2>
-            <div className="flex flex-col lg:flex-row gap-(--spacingHorizontalL)">
-              {/* Sidebar */}
-              <aside className="w-full lg:w-64 flex-shrink-0">
-                <Card className="bg-neutral-card-background border border-neutral-stroke1 rounded-medium shadow-4">
-                  <CardHeader header={<Text size={600}>Navigation</Text>} />
-                  <CardPreview className="p-(--spacingHorizontalS)">
-                    <nav className="flex flex-col gap-(--spacingVerticalXS)">
-                      <Button appearance="primary" className="justify-start">
-                        Dashboard
-                      </Button>
-                      <Button appearance="subtle" className="justify-start">
-                        Analytics
-                      </Button>
-                      <Button appearance="subtle" className="justify-start">
-                        Settings
-                      </Button>
-                      <Button appearance="subtle" className="justify-start">
-                        Reports
-                      </Button>
-                    </nav>
-                  </CardPreview>
-                </Card>
-              </aside>
-
-              {/* Main Content */}
-              <div className="flex-1 min-w-0">
-                <Card className="bg-neutral-card-background border border-neutral-stroke1 rounded-medium shadow-4">
-                  <CardHeader
-                    header={<Text size={600}>Main Content Area</Text>}
-                    description="This layout adapts from stacked on mobile to sidebar + content on desktop"
-                  />
-                  <CardPreview className="p-(--spacingHorizontalL)">
-                    <Body1 className="typography-body1 mb-(--spacingVerticalM)">
-                      This demonstrates a responsive sidebar layout using
-                      Tailwind's flex utilities. On mobile devices, the sidebar
-                      stacks above the main content. On larger screens (lg
-                      breakpoint and above), they sit side by side.
-                    </Body1>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-(--spacingHorizontalM)">
-                      <div className="p-(--spacingHorizontalM) rounded-medium bg-neutral-background2">
-                        <Body1Strong>Feature 1</Body1Strong>
-                        <Caption1 className="mt-(--spacingVerticalXS)">
-                          Description of feature one
-                        </Caption1>
-                      </div>
-                      <div className="p-(--spacingHorizontalM) rounded-medium bg-neutral-background2">
-                        <Body1Strong>Feature 2</Body1Strong>
-                        <Caption1 className="mt-(--spacingVerticalXS)">
-                          Description of feature two
-                        </Caption1>
-                      </div>
-                    </div>
-                  </CardPreview>
-                </Card>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-(--spacingHorizontalM) sm:gap-(--spacingHorizontalL) mb-(--spacingVerticalM) sm:mb-(--spacingVerticalL)">
+            <Card className="py-(--spacingVerticalM) shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-[box-shadow,transform] duration-normal ease-easy-ease hover:shadow-16 hover:-translate-y-0.5">
+              <div className="text-base600 sm:text-hero800 font-weight-semibold flex items-center gap-x-(--spacingHorizontalS) mb-(--spacingVerticalXS)">
+                <People24Regular />
+                14k
               </div>
-            </div>
-          </section>
+              <Text className="text-base300 sm:text-base400">Users</Text>
+              <div className="flex items-center gap-x-(--spacingHorizontalXS) text-base200 text-palette-green-foreground1">
+                <ChevronUp24Regular />
+                <Text>+5%</Text>
+                <Text className="hidden sm:inline">Last 30 days</Text>
+              </div>
+            </Card>
 
-          {/* Card Grid with Varied Sizes */}
-          <section className="mb-(--spacingVerticalXL)">
-            <Title2 className="typography-title2 mb-(--spacingVerticalL)">
-              Responsive Card Grid
-            </Title2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-(--spacingHorizontalL)">
-              {/* Featured Card - Takes 2 columns on large screens */}
-              <Card className="md:col-span-2 lg:col-span-1 bg-neutral-card-background border border-neutral-stroke1 rounded-medium shadow-4">
-                <CardPreview className="p-(--spacingHorizontalL)">
-                  <div className="aspect-video bg-neutral-background2 rounded-small mb-(--spacingVerticalM) flex items-center justify-center">
-                    <Text className="text-neutral-foreground3">
-                      Featured Image
+            <Card className="py-(--spacingVerticalM) shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-[box-shadow,transform] duration-normal ease-easy-ease hover:shadow-16 hover:-translate-y-0.5">
+              <div className="text-base600 sm:text-hero800 font-weight-semibold flex items-center gap-x-(--spacingHorizontalS) mb-(--spacingVerticalXS)">
+                <Eye24Regular />
+                325
+              </div>
+              <Text className="text-base300 sm:text-base400">Conversions</Text>
+              <div className="flex items-center gap-x-(--spacingHorizontalXS) text-base200 text-palette-red-foreground1">
+                <ChevronDown24Regular />
+                <Text>-3%</Text>
+                <Text className="hidden sm:inline">Last 30 days</Text>
+              </div>
+            </Card>
+
+            <Card className="py-(--spacingVerticalM) shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-[box-shadow,transform] duration-normal ease-easy-ease hover:shadow-16 hover:-translate-y-0.5">
+              <div className="text-base600 sm:text-hero800 font-weight-semibold flex items-center gap-x-(--spacingHorizontalS) mb-(--spacingVerticalXS)">
+                <DataTrending24Regular />
+                200k
+              </div>
+              <Text className="text-base300 sm:text-base400">Event count</Text>
+              <div className="flex items-center gap-x-(--spacingHorizontalXS) text-base200 text-palette-green-foreground1">
+                <ChevronUp24Regular />
+                <Text>+3%</Text>
+                <Text className="hidden sm:inline">Last 30 days</Text>
+              </div>
+            </Card>
+
+            <Card className="py-(--spacingVerticalM) shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-[box-shadow,transform] duration-normal ease-easy-ease hover:shadow-16 hover:-translate-y-0.5">
+              <CardHeader
+                header={
+                  <div>
+                    <Text
+                      weight="semibold"
+                      className="text-base400 sm:text-base500"
+                    >
+                      Explore your data
+                    </Text>
+                    <Text className="text-base300 sm:text-base400">
+                      Uncover performance and visitor insights with our data
                     </Text>
                   </div>
-                  <Title3 className="typography-title3 mb-(--spacingVerticalXS)">
-                    Featured Article
-                  </Title3>
-                  <Body1 className="typography-body1 mb-(--spacingVerticalM)">
-                    This is a featured card that demonstrates responsive grid
-                    layouts with Tailwind CSS. It adapts its width based on the
-                    screen size.
-                  </Body1>
-                  <Button appearance="primary">Read More</Button>
-                </CardPreview>
-              </Card>
-
-              {/* Regular Cards */}
-              {[1, 2, 3, 4].map((num) => (
-                <Card
-                  key={num}
-                  className="bg-neutral-card-background border border-neutral-stroke1 rounded-medium shadow-2"
-                >
-                  <CardPreview className="p-(--spacingHorizontalL)">
-                    <div className="aspect-video bg-neutral-background2 rounded-small mb-(--spacingVerticalM) flex items-center justify-center">
-                      <Text className="text-neutral-foreground3">
-                        Card {num}
-                      </Text>
-                    </div>
-                    <Body1Strong className="mb-(--spacingVerticalXS)">
-                      Card Title {num}
-                    </Body1Strong>
-                    <Caption1 className="text-neutral-foreground3">
-                      Brief description of the card content and its purpose.
-                    </Caption1>
-                  </CardPreview>
-                </Card>
-              ))}
-            </div>
-          </section>
-
-          {/* Flex Layout Examples */}
-          <section className="mb-(--spacingVerticalXL)">
-            <Title2 className="typography-title2 mb-(--spacingVerticalL)">
-              Flexible Layouts
-            </Title2>
-            <div className="space-y-(--spacingVerticalL)">
-              {/* Even Distribution */}
-              <Card className="bg-neutral-card-background border border-neutral-stroke1 rounded-medium shadow-2">
-                <CardHeader
-                  header={<Text size={600}>Even Distribution</Text>}
-                />
-                <CardPreview className="p-(--spacingHorizontalL)">
-                  <div className="flex gap-(--spacingHorizontalM)">
-                    {["Left", "Center", "Right"].map((label) => (
-                      <div
-                        key={label}
-                        className="flex-1 p-(--spacingHorizontalM) rounded-small bg-neutral-background2 text-center"
-                      >
-                        <Body1Strong>{label}</Body1Strong>
-                      </div>
-                    ))}
-                  </div>
-                </CardPreview>
-              </Card>
-
-              {/* Space Between */}
-              <Card className="bg-neutral-card-background border border-neutral-stroke1 rounded-medium shadow-2">
-                <CardHeader
-                  header={<Text size={600}>Space Between Layout</Text>}
-                />
-                <CardPreview className="p-(--spacingHorizontalL)">
-                  <div className="flex justify-between items-center gap-(--spacingHorizontalM) flex-wrap">
-                    <Body1Strong>Left Content</Body1Strong>
-                    <div className="flex gap-x-(--spacingHorizontalS)">
-                      <Button size="small" appearance="primary">
-                        Action
-                      </Button>
-                      <Button size="small" appearance="secondary">
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                </CardPreview>
-              </Card>
-
-              {/* Centered with Max Width */}
-              <Card className="bg-neutral-card-background border border-neutral-stroke1 rounded-medium shadow-2">
-                <CardHeader header={<Text size={600}>Centered Content</Text>} />
-                <CardPreview className="p-(--spacingHorizontalL)">
-                  <div className="max-w-md mx-auto text-center">
-                    <Body1 className="typography-body1">
-                      This content is centered with a maximum width constraint,
-                      creating a comfortable reading experience on wide screens.
-                    </Body1>
-                  </div>
-                </CardPreview>
-              </Card>
-            </div>
-          </section>
-
-          {/* Form-like Layout */}
-          <section className="mb-(--spacingVerticalXL)">
-            <Title2 className="typography-title2 mb-(--spacingVerticalL)">
-              Form Layout Example
-            </Title2>
-            <Card className="bg-neutral-card-background border border-neutral-stroke1 rounded-medium shadow-4">
-              <CardHeader
-                header={<Text size={600}>Contact Form</Text>}
-                description="Example of a form layout using Fluent components and Tailwind CSS"
+                }
               />
-              <CardPreview className="p-(--spacingHorizontalL)">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-(--spacingHorizontalL) mb-(--spacingVerticalM)">
+              <Button appearance="primary" className="w-full sm:w-auto">
+                Get insights
+              </Button>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-(--spacingHorizontalM) sm:gap-(--spacingHorizontalL) mb-(--spacingVerticalM) sm:mb-(--spacingVerticalL)">
+            <Card className="py-(--spacingVerticalM) shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-shadow duration-normal ease-easy-ease hover:shadow-16">
+              <CardHeader
+                header={
                   <div>
-                    <Body1Strong className="mb-(--spacingVerticalXS) block">
-                      First Name
-                    </Body1Strong>
-                    <div className="p-(--spacingHorizontalM) rounded-small border border-neutral-stroke1 bg-neutral-background1">
-                      <Text>John</Text>
+                    <Text
+                      weight="semibold"
+                      className="text-base400 sm:text-base500"
+                    >
+                      Sessions
+                    </Text>
+                    <div className="text-base600 sm:text-hero800 font-weight-semibold flex flex-wrap items-center gap-x-(--spacingHorizontalS) mb-(--spacingVerticalXS)">
+                      13,277
+                      <div className="flex items-center gap-x-(--spacingHorizontalXS) text-base200 text-palette-green-foreground1">
+                        <ChevronUp24Regular />
+                        <Text>+4%</Text>
+                      </div>
                     </div>
+                    <Text className="text-base300 sm:text-base400">
+                      Sessions over time for the last 30 days
+                    </Text>
                   </div>
-                  <div>
-                    <Body1Strong className="mb-(--spacingVerticalXS) block">
-                      Last Name
-                    </Body1Strong>
-                    <div className="p-(--spacingHorizontalM) rounded-small border border-neutral-stroke1 bg-neutral-background1">
-                      <Text>Doe</Text>
-                    </div>
-                  </div>
-                </div>
-                <div className="mb-(--spacingVerticalM)">
-                  <Body1Strong className="mb-(--spacingVerticalXS) block">
-                    Email
-                  </Body1Strong>
-                  <div className="p-(--spacingHorizontalM) rounded-small border border-neutral-stroke1 bg-neutral-background1">
-                    <Text>john.doe@example.com</Text>
-                  </div>
-                </div>
-                <div className="flex gap-x-(--spacingHorizontalS) justify-end">
-                  <Button appearance="secondary">Cancel</Button>
-                  <Button appearance="primary">Submit</Button>
-                </div>
+                }
+              />
+              <CardPreview className="overflow-x-auto">
+                <AreaChart
+                  data={sessionsData}
+                  height={300}
+                  width={600}
+                  enableReflow={true}
+                  className="min-w-full"
+                />
               </CardPreview>
             </Card>
-          </section>
+
+            <Card className="py-(--spacingVerticalM) shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-shadow duration-normal ease-easy-ease hover:shadow-16">
+              <CardHeader
+                header={
+                  <div>
+                    <Text
+                      weight="semibold"
+                      className="text-base400 sm:text-base500"
+                    >
+                      Page views and downloads
+                    </Text>
+                    <div className="text-base600 sm:text-hero800 font-weight-semibold flex flex-wrap items-center gap-x-(--spacingHorizontalS) mb-(--spacingVerticalXS)">
+                      1.3M
+                      <div className="flex items-center gap-x-(--spacingHorizontalXS) text-base200 text-palette-red-foreground1">
+                        <ChevronDown24Regular />
+                        <Text>-6%</Text>
+                      </div>
+                    </div>
+                    <Text className="text-base300 sm:text-base400">
+                      Page views and downloads for the last 6 months
+                    </Text>
+                  </div>
+                }
+              />
+              <CardPreview className="overflow-x-auto">
+                <VerticalBarChart
+                  data={pageViewsData}
+                  height={200}
+                  width={400}
+                  barWidth={40}
+                  yAxisTickCount={5}
+                  enableReflow={true}
+                  chartTitle="Page Views by Month"
+                  legendProps={{
+                    allowFocusOnLegends: true,
+                  }}
+                  className="min-w-full"
+                />
+              </CardPreview>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-(--spacingHorizontalM) sm:gap-(--spacingHorizontalL)">
+            <Card className="py-(--spacingVerticalM) shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-shadow duration-normal ease-easy-ease hover:shadow-16">
+              <CardHeader
+                header={
+                  <Text
+                    weight="semibold"
+                    className="text-base400 sm:text-base500"
+                  >
+                    Details
+                  </Text>
+                }
+              />
+              <DataGrid
+                items={tableData}
+                columns={columns}
+                sortable
+                getRowId={(item) => item.pageTitle}
+              >
+                <DataGridHeader>
+                  <DataGridRow>
+                    {({ renderHeaderCell }) => (
+                      <DataGridHeaderCell>
+                        {renderHeaderCell()}
+                      </DataGridHeaderCell>
+                    )}
+                  </DataGridRow>
+                </DataGridHeader>
+                <DataGridBody<TableItem>>
+                  {({ item, rowId }) => (
+                    <DataGridRow<TableItem> key={rowId}>
+                      {({ renderCell }) => (
+                        <DataGridCell>{renderCell(item)}</DataGridCell>
+                      )}
+                    </DataGridRow>
+                  )}
+                </DataGridBody>
+              </DataGrid>
+            </Card>
+
+            <div className="flex flex-col gap-y-(--spacingVerticalM)">
+              <Card className="py-(--spacingVerticalM) shadow-8 border border-neutral-stroke2 bg-neutral-background1 transition-shadow duration-normal ease-easy-ease hover:shadow-16">
+                <CardHeader
+                  header={
+                    <Text
+                      weight="semibold"
+                      className="text-base400 sm:text-base500"
+                    >
+                      Users by country
+                    </Text>
+                  }
+                />
+                <div className="flex flex-col gap-y-(--spacingVerticalS)">
+                  {countryData.map((country) => (
+                    <div
+                      key={country.name}
+                      className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-y-(--spacingVerticalXS) py-(--spacingVerticalXS)"
+                    >
+                      <div className="flex items-center gap-x-(--spacingHorizontalS)">
+                        <span className="w-5 h-[15px] bg-neutral-background3 rounded-small flex items-center justify-center text-base200">
+                          {country.flag}
+                        </span>
+                        <Text className="text-base300 sm:text-base400">
+                          {country.name}
+                        </Text>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-full sm:w-15 h-1 bg-neutral-background3 rounded-small overflow-hidden flex-1 sm:flex-none">
+                          <div
+                            className="h-full bg-brand-background transition-[width] duration-gentle ease-easy-ease"
+                            style={{ width: `${country.percentage}%` }}
+                          />
+                        </div>
+                        <Text className="text-base300 sm:text-base400 font-weight-medium">
+                          {country.percentage}%
+                        </Text>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
+          </div>
         </main>
       </div>
     </FluentProvider>
   );
-}
+};
 
-export default App;
+export default AnalyticsDashboard;
