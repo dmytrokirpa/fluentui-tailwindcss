@@ -1,6 +1,6 @@
 {
   "name": "fluentui-tailwindcss",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Fluent UI design tokens as Tailwind CSS v4 presets",
   "type": "module",
   "license": "MIT",
