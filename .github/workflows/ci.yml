@@ -64,12 +64,16 @@ jobs:
           node-version: "22"
           cache: "pnpm"
           registry-url: "https://registry.npmjs.org"
+          always-auth: true
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Configure npm registry
-        run: npm config set registry https://registry.npmjs.org
+      - name: Configure npm authentication
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > $HOME/.npmrc
+          npm config set registry https://registry.npmjs.org
+          npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
 
       - name: Run semantic-release
         run: pnpm semantic-release
