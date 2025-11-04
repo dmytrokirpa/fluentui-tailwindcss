@@ -20,8 +20,9 @@ describe("generateThemePreset", () => {
   it("should generate a theme preset with @theme directive", () => {
     const result = generateThemePreset(webLightTheme);
 
-    expect(result).toContain("@theme {");
-    expect(result).toContain("--*: initial;");
+    expect(result).toContain("@theme inline {");
+    // Check for category-specific wildcard patterns (e.g., --radius-*: initial;)
+    expect(result).toMatch(/--[\w-]+\*:\s*initial;/);
     expect(result).toContain("}");
   });
 
@@ -100,8 +101,7 @@ describe("generateThemePreset", () => {
     const theme = {} as Theme;
     const result = generateThemePreset(theme);
 
-    expect(result).toContain("@theme {");
-    expect(result).toContain("--*: initial;");
+    expect(result).toContain("@theme inline {");
     expect(result).toContain("}");
   });
 

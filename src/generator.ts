@@ -21,17 +21,26 @@ type ThemeTokens = Partial<Theme> | Record<string, string | number>;
  */
 export function generateThemePreset(theme: Theme): string {
   const cssLines: string[] = [];
+  const themeKeys = new Set<string>();
 
-  cssLines.push("@theme {");
-  cssLines.push("  --*: initial;");
+  cssLines.push("@theme inline {");
 
   Object.keys(theme)
     .filter((key) => !key.startsWith("spacing") && !key.startsWith("duration"))
     .forEach((key) => {
+      const twCssVarName = convertFluentTokenToTailwindVariableName(key);
+      const category = twCssVarName.replace("--", "").split("-")[0];
+
+      // Reset the category if it doesn't exist
+      if (!themeKeys.has(category)) {
+        themeKeys.add(category);
+        cssLines.push("");
+        cssLines.push(`/* ${category} tokens */`);
+        cssLines.push(`  --${category}-*: initial;`);
+      }
+
       cssLines.push(
-        `  ${convertFluentTokenToTailwindVariableName(
-          key,
-        )}: var(${convertFluentTokenToCssVariableName(key)});`,
+        `  ${twCssVarName}: var(${convertFluentTokenToCssVariableName(key)});`,
       );
     });
 
